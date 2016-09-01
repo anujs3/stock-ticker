@@ -1,0 +1,50 @@
+---------- StockTicker ---------- 
+
+Google Chrome Extension
+Author: Anuj Shah
+Description: View stock prices on a scrolling ticker.
+API(s) -- 
+	Markit: http://dev.markitondemand.com
+	Yahoo: http://developer.yahoo.com/yql
+
+--- URLs ---
+
+Key --
+	[user_text] = text entered in the search box
+	[ticker_symbol] = name of the stock symbol
+	[query] = SELECT%20*%20FROM%20yahoo.finance.quotes%20WHERE%20symbol%3D'[ticker_symbol]'
+
+Lookup: http://dev.markitondemand.com/Api/v2/Lookup/json?input=[user_text]
+Quote: http://query.yahooapis.com/v1/public/yql?q=[query]&format=json&env=store://datatables.org/alltableswithkeys
+Yahoo Search URL: http://finance.yahoo.com/q?s=[ticker_symbol]
+
+--- Objectives ---
+
+Enable users to easily search for a stock and check if the price went up or down.
+Display a scrolling stock ticker on the new tab page.
+
+--- Features/Capabilities ---
+
+Find stock quotes by searching for them in the search box.
+View all of the stocks that you are following on a scrolling ticker by opening a new tab.
+Click on the stock's symbol to get real-time updates.
+
+--- Buttons ---
+
+Submit –- searches for the specified company or symbol
+Show Favorites –- displays all of the favorites and their information in a table
+" + " –- adds stock to favorites
+" * " –- removes stock from favorites 
+
+--- Side Notes ---
+
+Stock information refreshes when the pop-up is opened.
+Favorites are shown by default.
+
+--- Stash ---
+
+Source Code: https://stash.iaccap.com/projects/NT/repos/anujshah/browse/StockTicker
+
+--- Chrome Web Store ---
+
+Install the extension from the web store: https://chrome.google.com/webstore/detail/stockticker/cklefegpoalfpflplmdlpmkfnclkkcad
