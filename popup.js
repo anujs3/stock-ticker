@@ -8,7 +8,7 @@ function Quote(name,symbol,last,change,percent)
 	this.name = name;
 	this.symbol = symbol;
 	this.lastPrice = last;
-	this.change = change;
+	this.change = String(change);
 	this.percent = percent;
 	this.getName = function() 
 	{
@@ -59,7 +59,7 @@ function Quote(name,symbol,last,change,percent)
 		}
 		if (this.lastPrice)
 		{
-			this.formattedLastPrice = formatNumber(this.lastPrice);
+			this.formattedLastPrice = "$" + formatNumber(this.lastPrice);
 		}
 		else
 		{
@@ -69,13 +69,13 @@ function Quote(name,symbol,last,change,percent)
 		{
 			this.formattedChange = "+0.00";
 		}
-		else if (this.change.indexOf("+") === 0)
+		else if (this.change.indexOf("-") === 0)
 		{
-			this.formattedChange = "+" + formatNumber(this.change);
+			this.formattedChange = formatNumber(this.change);
 		}
 		else
 		{
-			this.formattedChange = formatNumber(this.change);
+			this.formattedChange = "+" + formatNumber(this.change);
 		}
 		if (!this.percent)
 		{
@@ -83,33 +83,9 @@ function Quote(name,symbol,last,change,percent)
 		}
 		else
 		{
-			this.formattedPercent = "(" + formatNumber(Math.abs(this.percent.slice(0,-1))) + "%)";
+			this.formattedPercent = "(" + formatNumber(Math.abs(this.percent)) + "%)";
 		}
-		if (this.symbol === "^DJX")
-		{
-			this.formattedName = "Dow Jones Industrial Average";
-			if (!this.lastPrice)
-			{
-				this.formattedLastPrice = "N/A";
-			}
-			else
-			{
-				this.formattedLastPrice = formatNumber(this.lastPrice*100);
-			}
-			if (!this.change)
-			{
-				this.formattedChange = "+0.00";
-			}
-			else if (this.change.indexOf("+") === 0)
-			{
-				this.formattedChange = "+" + formatNumber(this.change*100);
-			}
-			else
-			{
-				this.formattedChange = formatNumber(this.change*100);
-			}
-		}
-		else if (this.symbol == undefined)
+		if (this.symbol == undefined)
 		{
 			throw new Error("Symbol does not exist.");
 		}
@@ -163,7 +139,7 @@ function checkStorage()
 	}
 	if (!localStorage.favorites)
 	{
-		localStorage.favorites = "^DJX ^IXIC ^GSPC";
+		localStorage.favorites = "";
 	}
 	if (!localStorage.quote)
 	{
@@ -196,7 +172,7 @@ function getHttpResponse(url,callback,errorCallback)
 				}
 			}
 		}
-	}
+	} 
 	request.open("GET",url,!!callback);
 	try
 	{
@@ -230,7 +206,7 @@ function lookUpStock(arg)
 	table.setAttribute("border","2");
 	var thead = document.createElement("THEAD");
 	var header = document.createElement("TR");
-	var names = ["Name", "Symbol", "Last Trade", "Change", ""];
+	var names = ["Name", "Symbol", "Price", "Change", ""];
 	appendToRow(header,names,"TH");
 	thead.appendChild(header);
 	table.appendChild(thead);
@@ -287,7 +263,7 @@ function lookUpStock(arg)
 	}
 	function getInfoForStock(callback)
 	{
-		disableButtons();
+		// disableButtons();
 		if (typeof info[stock] === "string")
 		{
 			getStockInfo(info[stock],info,quotes,table,tbody);
@@ -302,19 +278,15 @@ function lookUpStock(arg)
 
 function getStockInfo(symbol,info,quotes,table,tbody)
 {
-	var baseURL = "http://query.yahooapis.com/v1/public/yql?q=";
-	var query = "SELECT * FROM yahoo.finance.quotes WHERE symbol = " + "'"+symbol+"'";
-	var endURL = "&format=json&env=store://datatables.org/alltableswithkeys";
-	console.log(baseURL + encodeURIComponent(query) + endURL);
-	getHttpResponse(baseURL + encodeURIComponent(query) + endURL,
+	var baseURL = "http://dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=";
+	getHttpResponse(baseURL + encodeURIComponent(symbol),
 	function(request)
 	{
 		if (request.readyState === 4 && request.status === 200)
 		{
 			var text = request.responseText;
-			var inf = JSON.parse(text);
-			var stockQuote = inf.query.results.quote;
-			var q = new Quote(stockQuote.Name, stockQuote.Symbol,stockQuote.LastTradePriceOnly,stockQuote.Change,stockQuote.ChangeinPercent);
+			var stockQuote = JSON.parse(text);
+			var q = new Quote(stockQuote.Name, stockQuote.Symbol,stockQuote.LastPrice,stockQuote.Change,stockQuote.ChangePercent);
 			try
 			{
 				q.formatValues();
@@ -514,7 +486,6 @@ function tableElement(name,type)
 				marquee.splice(index2-1,4);
 				localStorage.marquee = marquee.join(" ");
 				localStorage.favorites = localStorage.favorites.split(" ").sort().join(" ");
-				console.log(localStorage.favorites);
 			}
 		});
 		td.appendChild(button);
@@ -612,7 +583,6 @@ function pressButton()
 }
 
 loadEvent(checkStorage);
-
 document.getElementById("symbol").addEventListener("click", function(){lookUpStock("input")});
 document.getElementById("input").addEventListener("keypress", pressButton);
 document.getElementById("favorites").addEventListener("click", function(){lookUpStock("favorite")});

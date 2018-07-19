@@ -1,4 +1,4 @@
-var number = -1;
+var number = -1; 
 var lst = [];
 
 function formatNumber(number) 
@@ -11,7 +11,7 @@ function Quote(name,symbol,last,change,percent)
 	this.name = name;
 	this.symbol = symbol;
 	this.lastPrice = last;
-	this.change = change;
+	this.change = String(change);
 	this.percent = percent;
 	this.getName = function() 
 	{
@@ -75,13 +75,13 @@ function Quote(name,symbol,last,change,percent)
 		{
 			this.formattedChange = "+0.00";
 		}
-		else if (this.change.indexOf("+") === 0)
+		else if (this.change.indexOf("-") === 0)
 		{
-			this.formattedChange = "+" + formatNumber(this.change);
+			this.formattedChange = formatNumber(this.change);
 		}
 		else
 		{
-			this.formattedChange = formatNumber(this.change);
+			this.formattedChange = "+" + formatNumber(this.change);
 		}
 		if (!this.percent)
 		{
@@ -89,7 +89,7 @@ function Quote(name,symbol,last,change,percent)
 		}
 		else
 		{
-			this.formattedPercent = "(" + formatNumber(Math.abs(this.percent.slice(0,-1))) + "%)";
+			this.formattedPercent = "(" + formatNumber(Math.abs(this.percent)) + "%)";
 		}
 	};
 	this.colorPercent = function()
@@ -207,20 +207,17 @@ function lookUpStock()
 
 function getStockInfo(quotes,info,stock,symbol)
 {
-	var baseURL = "http://query.yahooapis.com/v1/public/yql?q=";
-	var query = "SELECT * FROM yahoo.finance.quotes WHERE symbol = " + "'"+symbol+"'";
-	var endURL = "&format=json&env=store://datatables.org/alltableswithkeys";
-	getHttpResponse(baseURL + encodeURIComponent(query) + endURL,
+	var baseURL = "http://dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=";
+	getHttpResponse(baseURL + encodeURIComponent(symbol),
 	function(request)
 	{
 		if (request.readyState === 4 && request.status === 200)
 		{
 			var text = request.responseText;
-			var inf = JSON.parse(text);
-			var stockQuote = inf.query.results.quote;
-			var q = new Quote(stockQuote.Name,stockQuote.Symbol,stockQuote.LastTradePriceOnly,stockQuote.Change,stockQuote.ChangeinPercent);
+			var stockQuote = JSON.parse(text);
+			var q = new Quote(stockQuote.Name,stockQuote.Symbol,stockQuote.LastPrice,stockQuote.Change,stockQuote.ChangePercent);
 			q.formatValues();
-			var obj = {sym: q.getSymbol(), lp: q.getLastPrice(), cp: q.colorPercent()};
+			var obj = {sym: q.getSymbol(), lp: "$" + q.getLastPrice(), cp: q.colorPercent()};
 			quotes.push(obj)
 			function compareSymbol(quote1,quote2)
 			{
@@ -378,10 +375,10 @@ function keySelect()
 
 loadEvent(updateStocks);
 
-document.getElementById("ticker").setAttribute("style","width:"+screen.width+"px;");
-document.getElementById("input").setAttribute("style","align:center;width:"+(screen.width-150)+"px;"+"height:50px;font:40px Calibri,sans-serif;");
-document.getElementById("suggest").setAttribute("style","width:"+(screen.width-150)+"px;"+"height:50px;font:20px Calibri,sans-serif;color:white;");
-document.getElementById("submit").setAttribute("style","font-size:20px;height:50px;width:100px;height:55px;")
+document.getElementById("ticker").setAttribute("style","width:"+(1.1*screen.width)+"px;");
+document.getElementById("input").setAttribute("style","align:center;width:"+(0.8*screen.width)+"px;"+"height:50px;font:40px Calibri,sans-serif;");
+document.getElementById("suggest").setAttribute("style","padding:15px;width:"+(0.8*screen.width)+"px;"+"height:50px;font:20px Calibri,sans-serif;color:white;");
+document.getElementById("submit").setAttribute("style","font-size:20px;width:"+(0.075*screen.width)+"px;"+"height:50px;")
 
 setTimeout(function()
 {
@@ -409,4 +406,5 @@ document.getElementById("input").addEventListener("keyup",function()
 		lst = getSearchSuggest(document.getElementById("input").value);
 	}
 });
+
 document.getElementById(":").addEventListener("keydown",function(){keySelect(lst);}); 

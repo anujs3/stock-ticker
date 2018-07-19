@@ -2,6 +2,7 @@
 	<head>
 		<title>Custom Tab</title>
 		<meta name = "author" content = "Anuj Shah">
+		<link rel = "stylesheet" href = "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<style>
 			a
 			{
@@ -59,22 +60,22 @@
 				font-weight: bold;
 			}
 			#submit:hover
-			{
+			{ 
 				background-color: #D0D0D0; 
 			}
 		</style>
 	</head>
-	<body style = "background-color:#9494B8;">
+	<body style = "background-color:#9494B8;overflow-x:hidden;">
 		<p class = "marquee" id = "ticker"><span id = "speed"></span></p>
 		<center><a href = "http://finance.yahoo.com/">
 			<img src = "yahoo_finance.png"/>
 		</a></center>
 		<div id = ":">
 			<form method = "get" id = "url" action = "https://www.google.com/search" target = "_self">
-				<div id = "sty" style = "margin-top:20px;padding:10px;width:25em;">
-					<table border = "0" cellpadding = "0">
-						<tr>
-							<td>
+				<div id = "sty" style = "margin-top:20px;padding:10px;">
+					<table border = "0" cellpadding = "0" class="text-center">
+						<tr class="row">
+							<td class="col-sm-3">
 								<input 
 									type = "text"
 									spellcheck = "false"
@@ -82,10 +83,10 @@
 									size = "30"
 									maxlength = "100" 
 									id = "input"
-									placeholder = "Search Google"/>
+									placeholder = "Search"/>
 							</td>
-							<td>
-								<input id = "submit" type = "submit" value = "Search"/>
+							<td class="col-sm-3">
+								<input id = "submit" type = "submit" value = "Submit"/>
 							</td>
 						</tr>
 					</table>
